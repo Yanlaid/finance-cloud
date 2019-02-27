@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touceng.finance.mapper.DataReportMapper">
+
+    <!-- 渠道报表查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.touceng.domain.vo.ChannelReportVO">
+        <result column="id" property="id"/>
+        <result column="orderType" property="orderType"/>
+        <result column="channelAccountName" property="channelAccountName"/>
+        <result column="channelName" property="channelName"/>
+        <result column="channelAccountNo" property="channelAccountNo"/>
+        <result column="productName" property="productName"/>
+        <result column="totalCount" property="count"/>
+        <result column="amount" property="amount"/>
+        <result column="chargeAmount" property="chargeAmount"/>
+        <result column="costAmount" property="costAmount"/>
+        <result column="outAmount" property="outAmount"/>
+        <result column="createTime" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="ShareProfitResultMap" type="com.touceng.domain.vo.ShareProfitVO">
+        <result column="totalCount" property="count"/>
+        <result column="amount" property="amount"/>
+        <result column="outAmount" property="outAmount"/>
+        <result column="createTime" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="UserVolumResultMap" type="com.touceng.domain.vo.UserVolumVo">
+        <result column="id" property="id"/>
+        <result column="createTime" property="createTime"/>
+        <result column="userCode" property="userCode"/>
+        <result column="productName" property="productName"/>
+        <result column="totalCount" property="totalCount"/>
+        <result column="totalAmount" property="totalAmount"/>
+        <result column="totalProfit" property="totalProfit"/>
+        <result column="orderType" property="orderType"/>
+        <result column="chargeAmount" property="chargeAmount"/>
+        <result column="costAmount" property="costAmount"/>
+        <result column="fenAmount" property="fenAmount"/>
+    </resultMap>
+
+
+    <select id="pageChannelReport" resultMap="BaseResultMap" parameterType="com.touceng.domain.dto.query.ListPageDTO">
+        SELECT
+--         t.id AS id ,
+--         t.order_type AS orderType,
+--         w.channel_name AS channelName,
+--         w.channel_account_name AS channelAccountName,
+--         count(t.order_no) AS totalCount ,
+--         t.channel_account_no AS channelAccountNo ,
+--         t.product_name AS productName ,
+--         sum(t.order_amount) AS amount ,
+--         sum(c.income) AS costAmount ,
+--         sum(l.income) AS chargeAmount ,
+--         sum(l.outcome) AS outAmount ,
+--         DATE_FORMAT(t.create_time , '%Y-%m-%d') AS createTime
+        t.id AS id ,
+        t.order_type AS orderType,
+        w.channel_name AS channelName,
+        w.channel_account_name AS channelAccountName,
+        t.channel_account_no AS channelAccountNo ,
+        t.product_name AS productName ,
+        sum(l.income) AS chargeAmount ,
+        sum(l.outcome) AS outAmount ,
+        DATE_FORMAT(t.create_time , '%Y-%m-%d') AS createTime,
+
+
+        case t.order_type
+        when 0 THEN count(t.order_no)/2
+        when 1 THEN count(t.order_no)
+        end as totalCount,
+
+
+        case t.order_type
+        when 0 THEN sum(t.order_amount)/2
+        when 1 THEN sum(t.order_amount)
+        end as amount,
+
+        case t.order_type
+        when 0 THEN sum(c.income)/2
+        when 1 THEN sum(c.income)
+        end as costAmount
+        FROM
+        tc_channel_wallet_log AS t
+        LEFT JOIN tc_charge_wallet_log AS l ON t.order_no = l.order_no
+        LEFT JOIN tc_cost_wallet_log AS c ON t.order_no = c.order_no
+        LEFT JOIN tc_channel_wallet AS w ON w.channel_account_no = t.channel_account_no
+        -- WHERE
+        -- t.product_code != "dodo_profit_002"
+        <where>
+            <if test="createDate!=null and createDate != ''">
+                and DATE_FORMAT(t.create_time , '%Y-%m-%d') = DATE_FORMAT(#{createDate} , '%Y-%m-%d')
+            </if>
+            <if test="code != null and code != ''">
+                and w.channel_name =#{code}
+            </if>
+            <if test="name != null and name != ''">
+                and t.product_name =#{name}
+            </if>
+            and t.product_code != "dodo_profit_002"
+        </where>
+
+
+        GROUP BY
+        t.product_code ,
+        DATE_FORMAT(t.create_time , '%Y-%m-%d')
+
+    </select>
+
+
+    <select id="pageShareProfitReport" resultMap="ShareProfitResultMap"
+            parameterType="com.touceng.domain.dto.query.ListPageDTO">
+        SELECT
+        count(order_no) as totalCount,
+        sum(order_amount) as amount,
+        sum(income) as outAmount,
+        DATE_FORMAT(create_time , '%Y-%m-%d') as createTime
+        FROM
+        tc_user_wallet_log
+        where product_code = 'dodo_profit_001'
+        and user_code = #{code}
+        <if test="createDate!=null and createDate != ''">
+            and DATE_FORMAT(create_time , '%Y-%m-%d') = DATE_FORMAT(#{createDate} , '%Y-%m-%d')
+        </if>
+        GROUP BY DATE_FORMAT(create_time , '%Y-%m-%d')
+
+    </select>
+
+
+    <select id="pageUserVolumReport" resultMap="UserVolumResultMap"
+            parameterType="com.touceng.domain.dto.query.ListPageDTO">
+
+        SELECT
+        -- t.id as id,
+        -- t.user_code AS userCode ,
+        -- t.order_type AS orderType ,
+        -- t.product_name AS productName ,
+        -- sum(c.income) AS chargeAmount ,
+        -- sum(c.outcome) AS fenAmount ,
+        -- sum(l.income) AS costAmount ,
+        -- DATE_FORMAT(t.create_time , '%Y-%m-%d') AS createTime ,
+        -- count(t.order_no) AS totalCount ,
+        -- sum(t.order_amount) AS totalAmount
+        t.id as id,
+        t.user_code AS userCode ,
+        t.order_type AS orderType ,
+        t.product_name AS productName ,
+        sum(c.income) AS chargeAmount ,
+        sum(c.outcome) AS fenAmount ,
+        DATE_FORMAT(t.create_time , '%Y-%m-%d') AS createTime ,
+
+        case t.order_type
+        when 0 then sum(l.income)/2
+        when 1 then sum(l.income)
+        end AS costAmount ,
+
+        case t.order_type
+        when 0 then count(t.order_no)/2
+        when 1 then count(t.order_no)
+        end AS totalCount,
+
+        case t.order_type
+        when 0 then sum(t.order_amount)/2
+        when 1 then sum(t.order_amount)
+        end AS totalAmount
+
+
+        FROM
+        tc_user_wallet_log AS t
+        LEFT JOIN tc_charge_wallet_log AS c ON t.order_no = c.order_no
+        LEFT JOIN tc_cost_wallet_log AS l ON t.order_no = l.order_no
+        <where>
+            <if test="name != null and name != ''">
+                and t.product_name = #{name}
+            </if>
+            <if test="code != null and code != ''">
+                and t.user_code = #{code}
+            </if>
+            <if test="createDate != null and createDate != ''">
+                and DATE_FORMAT(t.create_time , '%Y-%m-%d') = DATE_FORMAT(#{createDate} , '%Y-%m-%d')
+            </if>
+            and t.product_code != 'dodo_profit_001'
+            and t.product_code != 'dodo_profit_003'
+        </where>
+        GROUP BY
+        t.user_code ,
+        t.product_code
+
+
+    </select>
+
+
+</mapper>

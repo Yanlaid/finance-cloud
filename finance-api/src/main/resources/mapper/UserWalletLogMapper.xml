@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touceng.finance.mapper.UserWalletLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.touceng.domain.entity.finance.UserWalletLog">
+        <result column="ID" property="id"/>
+        <result column="ORDER_NO" property="orderNo"/>
+        <result column="ORDER_AMOUNT" property="orderAmount"/>
+        <result column="ORDER_TYPE" property="orderType"/>
+        <result column="INCOME" property="income"/>
+        <result column="OUTCOME" property="outcome"/>
+        <result column="BALANCE" property="balance"/>
+        <result column="CURRENCY" property="currency"/>
+        <result column="USER_ID" property="userId"/>
+        <result column="USER_CODE" property="userCode"/>
+        <result column="USER_TYPE" property="userType"/>
+        <result column="PRODUCT_CODE" property="productCode"/>
+        <result column="PRODUCT_NAME" property="productName"/>
+        <result column="USER_WALLET_ACCOUNT_NO" property="userWalletNo"/>
+        <result column="STATUS" property="status"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+    </resultMap>
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="ListResultMap" type="com.touceng.domain.vo.WalletLogVO">
+        <result column="ORDER_NO" property="orderNo"/>
+        <result column="ORDER_AMOUNT" property="orderAmount"/>
+        <result column="ORDER_TYPE" property="orderType"/>
+        <result column="INCOME" property="income"/>
+        <result column="OUTCOME" property="outcome"/>
+        <result column="BALANCE" property="balance"/>
+        <result column="CURRENCY" property="currency"/>
+        <result column="USER_CODE" property="userCode"/>
+        <result column="USER_TYPE" property="userType"/>
+        <result column="PRODUCT_CODE" property="productCode"/>
+        <result column="PRODUCT_NAME" property="productName"/>
+        <result column="STATUS" property="status"/>
+        <result column="CREATE_TIME" property="createTime"/>
+    </resultMap>
+
+
+
+    <select id="pageUserWalletLog" resultMap="ListResultMap" parameterType="com.touceng.domain.dto.query.ListPageDTO">
+
+        select order_no,order_amount,order_type,income,outcome,balance,currency,user_code,user_type,product_code,product_name ,status,create_time
+        from tc_user_wallet_log
+        <where>
+            <if test="startTime != null and startTime != '' ">
+                and CREATE_TIME>=#{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and #{endTime}>=CREATE_TIME
+            </if>
+            <if test="code != null and code != ''">
+                and USER_CODE=#{code}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                and ORDER_NO=#{orderNo}
+            </if>
+
+        </where>
+
+    </select>
+
+    <select id="pageSubUserWalletLog" resultMap="ListResultMap" parameterType="com.touceng.domain.dto.query.ListPageDTO">
+
+        select order_no,order_amount,order_type,income,outcome,balance,currency,user_code,user_type,product_code,product_name ,status,create_time
+
+        from tc_user_wallet_log where user_code in
+        (select user_code from tc_user_wallet where agent_id = (select user_id from tc_user_wallet where user_code = #{code})
+        and user_code != #{code})
+        <if test="startTime != null and startTime != '' ">
+            and CREATE_TIME>=#{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and #{endTime}>=CREATE_TIME
+        </if>
+        <if test="orderNo != null and orderNo != ''">
+            and ORDER_NO=#{orderNo}
+        </if>
+        <if test="name != null and name != ''">
+            and user_code=#{name}
+        </if>
+
+    </select>
+
+
+
+
+
+</mapper>

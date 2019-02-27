@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touceng.finance.mapper.CostWalletLogMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.touceng.domain.entity.finance.CostWalletLog">
+	<result column="ID" property="id" />
+		<result column="ORDER_NO" property="orderNo" />
+		<result column="ORDER_AMOUNT" property="orderAmount" />
+		<result column="ORDER_TYPE" property="orderType" />
+		<result column="INCOME" property="income" />
+		<result column="OUTCOME" property="outcome" />
+		<result column="BALANCE" property="balance" />
+		<result column="CHANNEL_ACCOUNT_NO" property="channelAccountNo" />
+		<result column="CURRENCY" property="currency" />
+		<result column="PRODUCT_CODE" property="productCode" />
+		<result column="PRODUCT_NAME" property="productName" />
+		<result column="COST_WALLET_ACCOUNT_NO" property="costWalletNo" />
+		<result column="STATUS" property="status" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+
+	<select id="pageCostWalletlog" resultMap="BaseResultMap" parameterType="com.touceng.domain.dto.query.ListPageDTO">
+
+		select ID,ORDER_NO,ORDER_AMOUNT,ORDER_TYPE,INCOME,OUTCOME,BALANCE,CHANNEL_ACCOUNT_NO,CURRENCY,PRODUCT_CODE,PRODUCT_NAME,COST_WALLET_ACCOUNT_NO
+		,STATUS,CREATE_TIME,UPDATE_TIME from tc_cost_wallet_log
+		<where>
+			<if test="startTime != null and startTime != ''">
+				and CREATE_TIME>=#{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and #{endTime}>=CREATE_TIME
+			</if>
+			<if test="code != null and code != ''">
+				and ORDER_NO=#{code}
+			</if>
+		</where>
+
+	</select>
+
+
+
+</mapper>

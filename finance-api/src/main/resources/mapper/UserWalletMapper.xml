@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touceng.finance.mapper.UserWalletMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.touceng.domain.entity.finance.UserWallet">
+        <result column="ID" property="id"/>
+        <result column="ACCOUNT_NO" property="accountNo"/>
+        <result column="INCOME" property="income"/>
+        <result column="OUTCOME" property="outcome"/>
+        <result column="BALANCE" property="balance"/>
+        <result column="FROZON_BALANCE" property="frozonBalance"/>
+        <result column="USER_ID" property="userId"/>
+        <result column="USER_TYPE" property="userType"/>
+        <result column="USER_CODE" property="userCode"/>
+        <result column="AGENT_ID" property="agentId"/>
+        <result column="CURRENCY" property="currency"/>
+        <result column="STATUS" property="status"/>
+        <result column="VERSION" property="version"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+    </resultMap>
+
+
+    <select id="pageUserWallet" resultMap="BaseResultMap" parameterType="com.touceng.domain.dto.query.ListPageDTO">
+
+        select USER_ID,USER_CODE,CURRENCY,BALANCE,FROZON_BALANCE,STATUS,CREATE_TIME from tc_user_wallet
+        <where>
+            <if test="startTime != null and startTime != '' ">
+                and CREATE_TIME>=#{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and #{endTime}>=CREATE_TIME
+            </if>
+            <if test="status!=null">
+                and STATUS=#{status}
+            </if>
+            <if test="code != null and code != ''">
+                and USER_CODE=#{code}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

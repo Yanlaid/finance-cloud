@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touceng.finance.mapper.AgentWalletLogMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.touceng.domain.entity.finance.AgentWalletLog">
+		<result column="ID" property="id" />
+		<result column="ORDER_NO" property="orderNo" />
+		<result column="ORDER_AMOUNT" property="orderAmount" />
+		<result column="ORDER_TYPE" property="orderType" />
+		<result column="INCOME" property="income" />
+		<result column="OUTCOME" property="outcome" />
+		<result column="BALANCE" property="balance" />
+		<result column="CURRENCY" property="currency" />
+		<result column="USER_ID" property="userId" />
+		<result column="AGENT_ID" property="agentId" />
+		<result column="PRODUCT_CODE" property="productCode" />
+		<result column="PRODUCT_NAME" property="productName" />
+		<result column="AGENT_WALLET_ACCOUNT_NO" property="agentWalletNo" />
+		<result column="STATUS" property="status" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="UPDATE_TIME" property="updateTime" />
+	</resultMap>
+
+	<select id="queryAgentWalletLog" resultMap="BaseResultMap" parameterType="com.touceng.domain.entity.finance.AgentWalletLog">
+
+		select * from tc_agent_wallet_log
+		<where>
+			<if test="orderNo!=null and orderNo != ''">
+				and ORDER_NO=#{orderNo}
+			</if>
+			<if test="createTime != null and createTime != ''">
+				and CREATE_TIME=#{createTime}
+			</if>
+			<if test="productCode != null and productCode != ''">
+				and PRODUCT_CODE=#{productCode}
+			</if>
+		</where>
+	</select>
+
+
+
+
+
+</mapper>

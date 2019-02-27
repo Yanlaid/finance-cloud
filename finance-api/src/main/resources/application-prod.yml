@@ -1,0 +1,82 @@
+server:
+  port: 9090
+spring:
+    # 数据库配置
+    datasource:
+        name: prod
+        url: jdbc:mysql://10.1.0.6:3306/finance?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: finance
+        password: finance_Password12345
+        # 使用druid数据源
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        filters: stat
+        maxActive: 200
+        initialSize: 1
+        maxWait: 60000
+        minIdle: 1
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: select 'x'
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxOpenPreparedStatements: 20
+  # redis 配置
+    redis:
+      #Redis数据库索引
+      database: 5
+      host: 10.1.0.5
+      port: 6379
+      #Redis服务器连接密码
+      password: 09C#XKhr
+      pool:
+        max-idle: 100
+        min-idle: 1
+        max-active: 1000
+        max-wait: -1
+  # rabbitMq 配置 150.109.106.221
+    rabbitmq:
+      host: 10.1.0.13
+      port: 5672
+      username: touceng
+      password: touceng@2018
+      # publisher-confirms: true
+#项目自定义配置 以下代码暂时不用配置
+custom:
+  #项目名称
+  project_name: 投嶒财务管理系统
+  #数据中心代码
+  datacenter_code: 1
+  #机器标识代码
+  machine_code: 1
+  #线程池数量
+  pool_num: 3
+  #本地配置文件根/main/GitCode/touceng/jinjian/ - /gitcode/touceng/jinjian
+  file_path_root: /opt/Jinjian_Server/file/
+  #文件上传地址
+  file_upload_path: upload/
+  #文件下载地址
+  file_download_path: download/
+  #文件创建地址
+  file_create_path: create/
+  #文件访问地址前缀
+  http_prefix: http://150.109.59.200:8005/file/
+  #账务系统访问地址前缀
+  http_finance_prefix: http://172.20.11.41:9001/v1/data/sysnc/
+kft: #快付通配置
+   root_id: 2018070601762880 #快付通一级商户
+   cert_type: PKCS12 #证书类型
+   cert_path: /opt/cert/private.pfx #证书路径
+   download_path: /opt/cert/zip/ #下载路径
+   keystore_password: cc0706A #证书密码
+   key_password: cc0706A #证书容器密码
+   service_ip: 47.106.222.99 #商户服务器IP(callerIp)
+   server_version: 1.0.0-PRD  #快付通添加二级商户版本
+   service_secmerchant_add: amp_secmerchant_add #快付通添加二级商户接口名称
+   server_url: http://119.23.11.202:8080/kft/merchant/add #二级商户增加接口请求路径
+bg: #BigData配置
+   app_id: touceng_jinjian_kft #AppID标示配置
+   check_point: TCMerchant001 #checkPoint 接入点标示配置 
+   post_url: http://150.109.38.70:8080/bigdata-ws/rest/riskverify #BigData接口请求路径
